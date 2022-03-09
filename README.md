@@ -16,6 +16,9 @@ A Catalyst is a server that runs different services. These services currently wo
 If you just want to run a Catalyst server, please check the [Catalyst Owner](https://github.com/decentraland/catalyst-owner) repository. 
 You can check the list of available servers used by Decentraland in the [Catalyst Monitor](https://catalyst-monitor.vercel.app/)
 
+**Repositories**: 
+- Catalyst Source code: https://github.com/decentraland/catalyst
+- Set up a new Catalyst: https://github.com/decentraland/catalyst-owner
 ### Comms
 
 The Communication Service, also known as Lighthouse, is in charge of orchestrating the P2P networks between users connected to Decentraland. 
@@ -41,36 +44,46 @@ If you set up a local content server, it will receive all updates by those other
 
 This [CLI](https://github.com/decentraland/cli) provides tooling/commands to assist you in the [scenes](https://github.com/decentraland-scenes/Awesome-Repository) development process. Some of the commands will help you scaffold a new scene project, locally start and visualize the scene in order to test it and deploy it to a content server to be incorporated in your Decentraland parcel.
 
+**Repositories**:
+- CLI Source Code: https://github.com/decentraland/cli
+- Examples and Tutorials: https://github.com/decentraland-scenes/Awesome-Repository
 
 ## Catalyst Client
 
 This client [library](https://github.com/decentraland/catalyst-client) can be used to interact with Decentraland's Catalyst servers. You can both fetch data, or deploy new entities to the server you specify.
 
+**Repositories**:
+- Library Source Code https://github.com/decentraland/catalyst-client
+
 ## Web Browser
 
+**Repositories**:
+- Explorer https://github.com/decentraland/explorer
+- Kernel https://github.com/decentraland/kernel
+- Peer library https://github.com/decentraland/catalyst-comms-peer 
 ### Peer Library 
 
 The [Peer Library](https://github.com/decentraland/catalyst-comms-peer) manages Websocket connections for WebRTC signaling, Islands, Notifications and Location Data and WebRTC Connections for peers positions, scene bus, global chat and voice chat (private chat goes through the Matrix Synapse Server and the Matrix Client). 
 
-### Voice Chat Module 
+**Repositories**:
+- Library Source Code https://github.com/decentraland/catalyst-comms-peer
+### Kernel: Voice Chat Module
 
 This [Module](https://github.com/decentraland/explorer/tree/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/voice-chat-codec) is the codec to hook WebAudio & Worklets to comms
-
-
-### Client Comms 
+ 
+### Kernel: Client Comms
 
 [Abstraction](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/shared/comms) over the Communication Protocol 
 
-### Scene Loader System
+### Kernel: Scene Loader System
 
 [Module](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/decentraland-loader) that loads and unloads the scenes/parcels based on user position.
 
-
-### Scene 
+### Kernel: Scene
 
 High level [wrapper](https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/unity-interface/UnityScene.ts#L19) around the runtime scene  
 
-### Avatar Scene
+### Kernel: Avatar Scene
 
 It is a regular Decentraland [Scene](https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/ui/avatar/avatarSystem.ts), it has the size of the world. And it renders the avatars using the SDK
 
@@ -81,8 +94,6 @@ The [Matrix Client](https://github.com/decentraland/matrix-client) can be used t
 ### Sagas 
 
 Like an ESB. Everything is connected to Sagas
-
-
 ### Synapse
 
 [Synapse](https://matrix.org/docs/projects/server/synapse) server is an implementation of the [Matrix Protocol](https://matrix.org/), created for secure, decentralized communications. In the context of Decentraland it is used to manage private chats between peers and friendships. 
@@ -91,9 +102,11 @@ Like an ESB. Everything is connected to Sagas
 
 [REACT Application](https://github.com/decentraland/explorer-website) to load Kernel and Renderer
 
+**Repositories**:
+- Web Site https://github.com/decentraland/explorer-website
 ## Scene Runtime 
 
-### Runtime 
+### Kernel: Runtime 
 
 The [Runtime](https://github.com/decentraland/explorer/blob/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/scene-system/sdk/SceneRuntime.ts) handles SDK bindings and messaging with the Scene in Kernel
 
@@ -102,6 +115,8 @@ The [Runtime](https://github.com/decentraland/explorer/blob/df1d30412dcd1a94d933
 #### AMD
 This [Module](https://github.com/decentraland/js-sdk-toolchain/tree/c648dcabc0ac1aade3cf143769f7e7f67ffba95b/packages/%40dcl/amd) manages loading of RPC modules to interact with different components of Decentraland
 
+**Repositories**
+- https://github.com/decentraland/js-sdk-toolchain
 #### ECS
 The public library to interact with Decentraland. Sometimes people refers to the ECS as “The SDK”
 
