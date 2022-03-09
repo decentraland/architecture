@@ -35,7 +35,7 @@ If you set up a local content server, it will receive all updates by those other
 
 ### Nginx
 
-Reverse proxy to route traffic to the Catalysts Services.
+[Nginx](https://nginx.org/en/docs/) is the reverse proxy used to route traffic to the Catalysts Services.
 
 ## CLI
 
