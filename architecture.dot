@@ -1,0 +1,255 @@
+digraph G { 
+    label="Decentraland" 
+    labelloc="t"
+    fontsize =30
+    fontname="Helvetica,Arial,sans-serif"
+    compound=true; 
+    
+	node [fontname="Helvetica,Arial,sans-serif"]
+	edge [fontname="Helvetica,Arial,sans-serif"]    
+	graph [        
+		newrank = true,             
+		nodesep = .5,
+		ranksep = .4,		
+		splines = true,        
+	]
+	node [        
+		fixedsize = false,
+		fontsize =21,
+		height = 1,
+		shape = box,
+        colorscheme="pubugn9"
+		style = "filled,setlinewidth(2)",       
+        fillcolor=1
+		width = 2
+	]
+    
+    subgraph cluster_catalyst {                    
+        label = <Catalyst <BR/> <FONT POINT-SIZE="15">Decentralized Servers</FONT>>
+        colorscheme="pubugn9"       
+        bgcolor=4
+        fontsize=24.0              
+        URL="https://github.com/decentraland/catalyst"
+        Comms [ 
+            label=<Comms<BR /> <FONT POINT-SIZE="10">Users P2P networks</FONT>>
+            URL="https://github.com/decentraland/catalyst/tree/main/comms/lighthouse"
+        ]        
+        edge [		            
+            style = "invis"
+        ]                
+        Nginx [
+            label=<Nginx<BR/> <FONT POINT-SIZE="10">Reverse Proxy</FONT>>
+        ]
+        Comms -> Lambdas -> Content        
+        edge [		            
+            style = "normal"
+            dir=both
+        ]    
+        Content:e -> Nginx [constraint=false]        
+        Content [
+            label=<Content Server<BR/> <FONT POINT-SIZE="10">Assets Storage</FONT>>
+            URL="https://github.com/decentraland/catalyst/tree/main/content"
+        ]
+        Lambdas -> Nginx [constraint=false]
+        Lambdas [
+            label=<Lambdas<BR/> <FONT POINT-SIZE="10">Utilities to retrieve and validate data</FONT>>
+            URL="https://github.com/decentraland/catalyst/tree/main/lambdas"
+        ]
+        Comms -> Nginx [constraint=false]                	        
+    }
+    
+    TheGraph [
+        label=<The Graph<BR/> <FONT POINT-SIZE="10">Query the Blockchain</FONT>>
+        URL="https://thegraph.com/hosted-service/subgraph/decentraland/collections-matic-mainnet"
+    ]
+    Content:w -> TheGraph [ltail=cluster_catalyst]   
+        
+    edge [dir=both]   
+    Nginx -> CatalystClient
+   
+   subgraph cluster_cli { 
+        label = <CLI<BR/><FONT POINT-SIZE="10"><BR/>Command line to start new projects,<BR/>preview changes and deploy<BR/>scenes and smart items</FONT>>
+        colorscheme="pubugn9"       
+        bgcolor=4
+        fontsize=24.0              
+        edge [ arrowhead=none, dir=none ]
+        CLI[
+            label=<CLI<BR/> <FONT POINT-SIZE="10"><BR/>Compiles scenes (build-ecs)<BR/>Preview scenes in browser<BR/>Uploads compiled code to catalys</FONT>>
+            URL="https://github.com/decentraland/cli"
+        ]
+        "build-ecs" [
+            label=<build-ecs<FONT POINT-SIZE="10"><BR/>Bundles code from senes, AMD and ECS<BR/>to generate deployable scenes</FONT>>            
+            URL="https://github.com/decentraland/js-sdk-toolchain/blob/c648dcabc0ac1aade3cf143769f7e7f67ffba95b/packages/%40dcl/build-ecs/index.ts"
+        ]
+        CLI -> "build-ecs"
+    }
+
+    edge[arrowhead=none, dir=none style=invis]
+    Content -> CLI [ltail=cluster_catalyst, lhead=cluster_cli]
+    
+    
+    CatalystClient[
+        label=<Catalyst Client<BR/> <FONT POINT-SIZE="10">Library to interact with Catalyst Servers</FONT>>
+        URL="https://github.com/decentraland/catalyst-client"
+    ]
+    edge[style=normal arrowhead=normal]
+    CLI -> CatalystClient
+    
+    edge[style=normal arrowhead=normal dir=both]
+    Synapse[
+        label=<Synapse Matrix Server<BR/> <FONT POINT-SIZE="10">Decentralized Service to manages<BR/>private chats and Friendships</FONT>>
+        URL="https://github.com/decentraland/catalyst-client"
+    ]
+    Synapse -> MatrixClient
+
+	subgraph cluster_webbrowser {     
+        fontsize=24.0
+        colorscheme="pubugn9"       
+        bgcolor=4                          
+        VoiceCodecWorker [
+            label=<Voice Codec Worker<FONT POINT-SIZE="10"><BR/><BR/>Encodes/decodes audio using libopus (wasm)</FONT>>            
+        ]
+        subgraph cluster_sceneruntime {
+            label="Scene Runtime (Web Worker)"
+            bgcolor=5
+            SceneRuntime
+            subgraph cluster_bundle {
+                bgcolor=6
+                label = "Scene Compiled Bundle"
+                edge [style=invis]
+                AMD[
+                    label=<AMD<FONT POINT-SIZE="10"><BR/>Manages loading of RPC modules to interact<BR/>with different components of Decentraland</FONT>>
+                    URL="https://github.com/decentraland/js-sdk-toolchain/tree/c648dcabc0ac1aade3cf143769f7e7f67ffba95b/packages/%40dcl/amd"
+                ]
+                ECS [
+                    label=<ECS<FONT POINT-SIZE="10"><BR/>The public library to interact with Decentraland.<BR/>Sometimes people refers to the ECS as “The SDK”</FONT>>
+                    URL="https://github.com/decentraland/explorer/tree/f4c30a3cab1ef014e1f20efdb2a0a12ef6c996e0/kernel/packages/decentraland-ecs"
+                ]
+                UserCode [
+                    label=<User Code<FONT POINT-SIZE="10"><BR/>User generated code is part of the bundle<BR/> of the Scenes</FONT>>                    
+                ]
+                AMD -> ECS -> UserCode
+            }            
+        }
+        
+        subgraph cluster_website {
+            label="Web App"
+            bgcolor=5
+            ExplorerWebSite
+        }        
+        ClientComms[
+            label=<Client Comms<FONT POINT-SIZE="10"><BR/><BR/>Abstraction over the communications protocols</FONT>>
+            URL="https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/shared/comms"
+        ]
+        EthProvider[
+            label="Ethereum Provider"
+        ]
+        ExplorerWebSite[
+            label=<Explorer Website<FONT POINT-SIZE="10"><BR/><BR/>React App to load kernel and renderer</FONT>>
+            URL="https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/shared/comms"
+        ]        
+        ExplorerWebSite -> EthProvider
+        ClientComms -> ExplorerWebSite
+        subgraph cluster_Kernel {            
+            label=<Kernel<FONT POINT-SIZE="10"><BR/><BR/>Code package to bind all low level constructs<BR/> of Decentraland to generate an<BR/> usable Explorer Arrows are omitted for clarity.<BR/> Assume everything is connected to Sagas.</FONT>>
+            URL="https://github.com/decentraland/kernel"
+            bgcolor=5 	     
+            node [shape=ellipse]
+            Sagas
+            node [shape=box]
+            edge [style=invis]               
+            ClientComms -> VoiceChat -> SceneLoader -> Scene -> AvatarScene -> MatrixClient -> Sagas
+            edge [style=solid arrowhead=normal dir=forward]
+            SceneLoader -> Scene 
+        }               
+        
+        edge [style=normal]
+        CatalystPeer[ 
+            label=<Peer Library<BR/> <FONT POINT-SIZE="10">Comms Library</FONT>>
+            URL="https://github.com/decentraland/catalyst-comms-peer"
+        ]
+        Renderer[
+            label=<Renderer<BR/> <FONT POINT-SIZE="10">Different implementations of renderers are available<BR/>to debug in Unity Editor</FONT>>
+            URL="https://github.com/decentraland/unity-renderer/"
+        ]
+        VoiceChat[
+            label=<Voice Chat Module<BR/> <FONT POINT-SIZE="10">Set of components to hook<BR/>WebAudio and Worklets to comms</FONT>>
+            URL="https://github.com/decentraland/explorer/tree/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/voice-chat-codec"
+        ]
+        SceneLoader [
+            label=<Scene Loader System<BR/> <FONT POINT-SIZE="10">High level wrapper around a runtime scene</FONT>>
+            URL="https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/decentraland-loader"
+        ]
+        Scene [
+            label=<Scene<BR/> <FONT POINT-SIZE="10">Loads and Unloads scenes around the User</FONT>>
+            URL="https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/unity-interface/UnityScene.ts#L19"
+        ]
+        AvatarScene [
+            label=<Avatar Scene<BR/> <FONT POINT-SIZE="10">It is a regular Decentraland Scene,.<BR/>it has the size of the world.<BR/> And it renders the avatars using the SDK</FONT>>
+            URL="https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/ui/avatar/avatarSystem.ts"
+        ]
+        MatrixClient [
+            label=<Matrix Client<BR/> <FONT POINT-SIZE="10">Abstraction over the Matrix protocol to<BR/> enable Friends list and private chats</FONT>>
+            URL="https://github.com/decentraland/matrix-client"
+        ]
+        Sagas [
+            label=<Sagas<BR/> <FONT POINT-SIZE="10">Like an ESB: Everything is connected to sagas</FONT>>                    
+        ]
+        SceneRuntime[
+            label=<Scene Runtime<BR/> <FONT POINT-SIZE="10">Handles SDK bindings<br/>and messaging with the Scene in Kernel</FONT>>
+            URL="https://github.com/decentraland/matrix-client"
+        ]
+        CatalystPeer -> ClientComms                
+        VoiceChat -> VoiceCodecWorker        
+        Renderer -> Scene        
+        Renderer -> AvatarScene
+        Content -> Renderer
+        Scene -> SceneRuntime -> ECS
+        Content:e -> SceneRuntime
+        edge [style=invis]
+        "CatalystPeer"  -> Renderer                
+        label="Web Browser"        
+    }
+    
+    CatalystPeer -> Nginx 
+    edge [style=rounded arrowhead=none dir=none  lhead=cluster_bundle ]    
+    "build-ecs":e -> ECS:e
+        
+    { 
+        rank = same; 
+        Comms
+        Nginx
+        CatalystPeer    
+        ExplorerWebSite    
+    }
+    {
+        rank = same;
+        CLI    
+        CatalystClient    
+    }
+    {
+        rank=same;
+        MatrixClient
+        Synapse
+        
+    }
+    {
+        rank = same;
+        CatalystPeer
+        ClientComms        
+    }
+    {
+        rank = same;
+        Content                
+        Renderer
+        Scene    
+        SceneRuntime    
+        ECS
+    }
+    {
+        rank=same;
+        Lambdas
+        VoiceChat
+        VoiceCodecWorker
+    }
+}
