@@ -23,15 +23,15 @@ It needs to determine which are the candidates for a P2P connection and do the W
 
 ### Lambdas 
 
-This service provides a set of utilities required by the Catalyst Server Clients\Consumers in order to retrieve or validate data.
+This service provides a set of utilities required by the Catalyst Server Clients/Consumers in order to retrieve or validate data.
 Some of the validations run in these functions are ownership related and for that it uses [The Graph](https://thegraph.com/hosted-service/subgraph/decentraland/collections-matic-mainnet) to query the blockchain. 
 
 
 ### Content Server 
 
-The Content Server currently stores many of the [Entities](https://github.com/decentraland/common-schemas/tree/main/src/platform) used in Decentraland. For example scenes, wearables and profiles. Content servers will automatically sync with each other, as long as they were all whitelisted by the DAO.
+The Content Server currently stores many of the [Entities](https://github.com/decentraland/common-schemas/tree/main/src/platform) used in Decentraland. For example scenes, wearables and profiles. Content servers will automatically sync with each other, as long as they were all approved by the [DAO](http://governance.decentraland.org/).
 
-If you set up a local content server, it will receive all updates by those other whitelisted servers. However, new deployments that happen on your local server will not be sent to other servers.
+If you set up a local content server, it will receive all updates by those other DAO Catalysts. However, new deployments that happen on your local server will not be sent to other servers.
 
 ### Nginx
 
