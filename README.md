@@ -63,7 +63,7 @@ This [Module](https://github.com/decentraland/explorer/tree/af59463dd3882516874c
 
 ### Scene Loader System
 
-[Module](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/decentraland-loader) to Loads and unloads the scenes/parcels based on user position.
+[Module](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/decentraland-loader) that loads and unloads the scenes/parcels based on user position.
 
 
 ### Scene 
