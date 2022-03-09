@@ -5,6 +5,36 @@ This repository aims to have the main Decentraland Architecture, defined using [
 
 ![Architecture](architecture.svg)
 
+## Index
+
+- [Decentraland Architecture](#decentraland-architecture)
+  - [Index](#index)
+  - [Catalyst](#catalyst)
+    - [Comms](#comms)
+    - [Lambdas](#lambdas)
+    - [Content Server](#content-server)
+    - [Nginx](#nginx)
+  - [CLI](#cli)
+  - [Catalyst Client](#catalyst-client)
+  - [Web Browser](#web-browser)
+    - [Peer Library](#peer-library)
+    - [Kernel: Voice Chat Module](#kernel-voice-chat-module)
+    - [Kernel: Client Comms](#kernel-client-comms)
+    - [Kernel: Scene Loader System](#kernel-scene-loader-system)
+    - [Kernel: Scene](#kernel-scene)
+    - [Kernel: Avatar Scene](#kernel-avatar-scene)
+    - [Matrix Client](#matrix-client)
+    - [Sagas](#sagas)
+    - [Synapse](#synapse)
+  - [Explorer Website](#explorer-website)
+  - [Scene Runtime](#scene-runtime)
+    - [Kernel: Runtime](#kernel-runtime)
+    - [Compiler Bundle](#compiler-bundle)
+      - [AMD](#amd)
+      - [ECS](#ecs)
+      - [User Code](#user-code)
+- [How to Update this Repository](#how-to-update-this-repository)
+
 ## Catalyst
 
 A Catalyst is a server that runs different services. These services currently work as the backbone for Decentraland. Some of these project are:
