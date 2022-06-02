@@ -10,7 +10,10 @@ This repository aims to have the main Decentraland Architecture, defined using [
 - [Decentraland Architecture](#decentraland-architecture)
   - [Index](#index)
   - [Catalyst](#catalyst)
-    - [Comms](#comms)
+    - [Backend for Frontend (BFF)](#backend-for-frontend-bff)
+    - [Archipelago Service](#archipelago-service)
+    - [NATS](#nats)
+    - [LiveKit](#livekit)
     - [Lambdas](#lambdas)
     - [Content Server](#content-server)
     - [Nginx](#nginx)
@@ -37,22 +40,28 @@ This repository aims to have the main Decentraland Architecture, defined using [
 
 ## Catalyst
 
-A Catalyst is a server that runs different services. These services currently work as the backbone for Decentraland. Some of these project are:
+A Catalyst is a server that bundles different services. These services currently work as the backbone for Decentraland and run the decentralized storage for most of the content needed by the client and orchestrate the communications between peers. Some of these projects that are part of this bundle are:
 
-- [Comms / Lighthouse](https://github.com/decentraland/catalyst/tree/main/lambdas)
+- [Backend for Frontend](https://github.com/decentraland/explorer-bff) (BFF)
+- [Archipelago Service](https://github.com/decentraland/archipelago-service)
+- [NATS](https://nats.io/)
 - [Lambdas](https://github.com/decentraland/catalyst/tree/main/lambdas)
 - [Content Server](https://github.com/decentraland/catalyst/tree/main/content)
 
 If you just want to run a Catalyst server, please check the [Catalyst Owner](https://github.com/decentraland/catalyst-owner) repository. 
 You can check the list of available servers used by Decentraland in the [Catalyst Monitor](https://catalyst-monitor.vercel.app/)
 
-**Repositories**: 
-- Catalyst Source code: https://github.com/decentraland/catalyst
-- Set up a new Catalyst: https://github.com/decentraland/catalyst-owner
-### Comms
+### [Backend for Frontend](https://github.com/decentraland/explorer-bff) (BFF)
+This service was created to resolve client needs to enable faster development of new features without breaking the existing APIs. In the Catalyst context, it's used for the communications between peers connected to the client, its main responsibility is to manage the P2P signaling. 
 
-The Communication Service, also known as Lighthouse, is in charge of orchestrating the P2P networks between users connected to Decentraland. 
-It needs to determine which are the candidates for a P2P connection and do the WebRTC signaling to establish the connection. Most of this logic is done through 2 external components the [PeerJS Server](https://github.com/decentraland/peerjs-server) (connects WebRTC peers) and [Archipelago](https://github.com/decentraland/archipelago) (receives users positions and groups them in islands)
+### [Archipelago Service](https://github.com/decentraland/archipelago-service)
+Previously Archipelago was a [library](https://github.com/decentraland/archipelago) used by the [Lighthouse](https://github.com/decentraland/lighthouse), as now it needs to work with the different transports beyond P2P, it was converted into a Service. This service will have the same responsibility that the library did: group peers in clusters so they can communicate efficiently. On the other hand, the service will also need to be able to balance islands using the available transports and following a set of Catalyst Owner defined rules, in order to, for example, use LiveKit for an island in the Casino and P2P in a Plaza.
+
+### [NATS](https://nats.io/)
+NATS is a message broker that enables the data exchange and communication between services. This is also a building block for future developments and will enable an easy way to connect services using subject-based messaging. In the context of the communication services architecture, it is used to communicate the BFF, Archipelago and LiveKit.
+
+### [LiveKit](https://livekit.io/)
+LiveKit is an open source project that provides scalable, multi-user conferencing over WebRTC. Instead of doing a P2P network, peers are connected to a [Selective Forwarding Unit](https://github.com/decentraland/comms3-livekit-transport) (SFU) in charge of managing message relay and different quality aspects of the communication. This will be the added infrastructure in order to provide high-performance/high-quality communications between crowds on designated scenes.
 
 ### Lambdas 
 
