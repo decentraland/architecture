@@ -1,5 +1,5 @@
 ---
-title: "Architecture"
+title: "Platform"
 slug: /contributor/architecture/platform
 ---
 
