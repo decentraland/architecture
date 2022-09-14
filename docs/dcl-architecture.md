@@ -1,10 +1,11 @@
 ---
 title: "Architecture"
-slug: "/contributor/architecture/platform"
+slug: /contributor/architecture/platform
 ---
 
 The following is a representation of the Decentraland Platform architecture and it's components: 
 
+![architecture](architecture.svg)
 
 ## Index
 
