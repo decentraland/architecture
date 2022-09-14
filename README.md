@@ -2,7 +2,7 @@
 
 This repository aims to have the main Decentraland Architecture, defined using [dot language](https://graphviz.org/doc/info/lang.html). The goal is to help you understand it's components, responsibilities, how they interact and help you navigate through them. 
 
-You will find the documentation index [here](docs/dcl-architecture.md) and, also, the content of this repository is published on the [Technical Documentation Site](https://tech-docs.decentraland.org/contributor/). 
+You will find the documentation index [here](docs/dcl-architecture.md) and, also, the content of this repository is published on the [Technical Documentation Site](https://docs.decentraland.org/contributor/). 
 
 # How to Update this Repository
 
