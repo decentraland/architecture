@@ -1,0 +1,13 @@
+{
+    "contributor": [
+        {
+            "name": "Architecture",
+            "children": [
+                {
+                    "name": "Platform",
+                    "slug": "/contributor/architecture/platform"
+                }
+            ]
+        }
+    ]   
+}
