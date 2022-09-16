@@ -22,17 +22,17 @@ The following is a representation of the Decentraland Platform architecture and 
   - [Catalyst Client](#catalyst-client)
   - [Web Browser](#web-browser)
     - [Peer Library](#peer-library)
-    - [Kernel: Voice Chat Module](#kernel-voice-chat-module)
-    - [Kernel: Client Comms](#kernel-client-comms)
-    - [Kernel: Scene Loader System](#kernel-scene-loader-system)
-    - [Kernel: Scene](#kernel-scene)
-    - [Kernel: Avatar Scene](#kernel-avatar-scene)
+    - [Kernel - Voice Chat Module](#kernel-voice-chat-module)
+    - [Kernel - Client Comms](#kernel-client-comms)
+    - [Kernel - Scene Loader System](#kernel-scene-loader-system)
+    - [Kernel - Scene](#kernel-scene)
+    - [Kernel - Avatar Scene](#kernel-avatar-scene)
     - [Matrix Client](#matrix-client)
     - [Sagas](#sagas)
     - [Synapse](#synapse)
   - [Explorer Website](#explorer-website)
   - [Scene Runtime](#scene-runtime)
-    - [Kernel: Runtime](#kernel-runtime)
+    - [Kernel - Runtime](#kernel-runtime)
     - [Compiler Bundle](#compiler-bundle)
       - [AMD](#amd)
       - [ECS](#ecs)
@@ -52,17 +52,29 @@ A Catalyst is a server that bundles different services. These services currently
 If you just want to run a Catalyst server, please check the [Catalyst Owner](https://github.com/decentraland/catalyst-owner) repository. 
 You can check the list of available servers used by Decentraland in the [Catalyst Monitor](https://catalyst-monitor.vercel.app/)
 
-### [Backend for Frontend](https://github.com/decentraland/explorer-bff) (BFF)
+### Backend for Frontend (BFF)
+
 This service was created to resolve client needs to enable faster development of new features without breaking the existing APIs. In the Catalyst context, it's used for the communications between peers connected to the client, its main responsibility is to manage the P2P signaling. 
 
-### [Archipelago Service](https://github.com/decentraland/archipelago-service)
+[Repo link](https://github.com/decentraland/explorer-bff)
+
+### Archipelago Service
+
 Previously Archipelago was a [library](https://github.com/decentraland/archipelago) used by the [Lighthouse](https://github.com/decentraland/lighthouse), as now it needs to work with the different transports beyond P2P, it was converted into a Service. This service will have the same responsibility that the library did: group peers in clusters so they can communicate efficiently. On the other hand, the service will also need to be able to balance islands using the available transports and following a set of Catalyst Owner defined rules, in order to, for example, use LiveKit for an island in the Casino and P2P in a Plaza.
 
-### [NATS](https://nats.io/)
+[Repo link](https://github.com/decentraland/archipelago-service)
+
+### NATS
+
 NATS is a message broker that enables the data exchange and communication between services. This is also a building block for future developments and will enable an easy way to connect services using subject-based messaging. In the context of the communication services architecture, it is used to communicate the BFF, Archipelago and LiveKit.
 
-### [LiveKit](https://livekit.io/)
+[Project link](https://nats.io/)
+
+### LiveKit
+
 LiveKit is an open source project that provides scalable, multi-user conferencing over WebRTC. Instead of doing a P2P network, peers are connected to a [Selective Forwarding Unit](https://github.com/decentraland/comms3-livekit-transport) (SFU) in charge of managing message relay and different quality aspects of the communication. This will be the added infrastructure in order to provide high-performance/high-quality communications between crowds on designated scenes.
+
+[Project link](https://livekit.io/)
 
 ### Lambdas 
 
@@ -107,23 +119,24 @@ The [Peer Library](https://github.com/decentraland/catalyst-comms-peer) manages 
 
 **Repositories**:
 - Library Source Code https://github.com/decentraland/catalyst-comms-peer
-### Kernel: Voice Chat Module
+- 
+### Kernel - Voice Chat Module
 
 This [Module](https://github.com/decentraland/explorer/tree/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/voice-chat-codec) is the codec to hook WebAudio & Worklets to comms
  
-### Kernel: Client Comms
+### Kernel - Client Comms
 
 [Abstraction](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/shared/comms) over the Communication Protocol 
 
-### Kernel: Scene Loader System
+### Kernel - Scene Loader System
 
 [Module](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/decentraland-loader) that loads and unloads the scenes/parcels based on user position.
 
-### Kernel: Scene
+### Kernel - Scene
 
 High level [wrapper](https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/unity-interface/UnityScene.ts#L19) around the runtime scene  
 
-### Kernel: Avatar Scene
+### Kernel - Avatar Scene
 
 It is a regular Decentraland [Scene](https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/ui/avatar/avatarSystem.ts), it has the size of the world. And it renders the avatars using the SDK
 
@@ -134,6 +147,7 @@ The [Matrix Client](https://github.com/decentraland/matrix-client) can be used t
 ### Sagas 
 
 Like an ESB. Everything is connected to Sagas
+
 ### Synapse
 
 [Synapse](https://matrix.org/docs/projects/server/synapse) server is an implementation of the [Matrix Protocol](https://matrix.org/), created for secure, decentralized communications. In the context of Decentraland it is used to manage private chats between peers and friendships. 
@@ -146,7 +160,7 @@ Like an ESB. Everything is connected to Sagas
 - Web Site https://github.com/decentraland/explorer-website
 ## Scene Runtime 
 
-### Kernel: Runtime 
+### Kernel - Runtime 
 
 The [Runtime](https://github.com/decentraland/explorer/blob/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/scene-system/sdk/SceneRuntime.ts) handles SDK bindings and messaging with the Scene in Kernel
 
