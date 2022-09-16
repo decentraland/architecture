@@ -1,2 +1,2 @@
 architecture:
-	dot -Tsvg architecture.dot > architecture.svg
+	dot -Tpng architecture.dot > architecture.png
