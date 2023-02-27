@@ -22,17 +22,17 @@ The following is a representation of the Decentraland Platform architecture and 
   - [Catalyst Client](#catalyst-client)
   - [Web Browser](#web-browser)
     - [Peer Library](#peer-library)
-    - [Kernel - Voice Chat Module](#kernel-voice-chat-module)
-    - [Kernel - Client Comms](#kernel-client-comms)
-    - [Kernel - Scene Loader System](#kernel-scene-loader-system)
-    - [Kernel - Scene](#kernel-scene)
-    - [Kernel - Avatar Scene](#kernel-avatar-scene)
+    - [BrowserInterface - Voice Chat Module](#browser-interface-voice-chat-module)
+    - [BrowserInterface - Client Comms](#browser-interface-client-comms)
+    - [BrowserInterface - Scene Loader System](#browser-interface-scene-loader-system)
+    - [BrowserInterface - Scene](#browser-interface-scene)
+    - [BrowserInterface - Avatar Scene](#browser-interface-avatar-scene)
     - [Matrix Client](#matrix-client)
     - [Sagas](#sagas)
     - [Synapse](#synapse)
   - [Explorer Website](#explorer-website)
   - [Scene Runtime](#scene-runtime)
-    - [Kernel - Runtime](#kernel-runtime)
+    - [Scene Runtime Repo](#scene-runtime-repo)
     - [Compiler Bundle](#compiler-bundle)
       - [AMD](#amd)
       - [ECS](#ecs)
@@ -110,8 +110,7 @@ This client [library](https://github.com/decentraland/catalyst-client) can be us
 ## Web Browser
 
 **Repositories**:
-- Explorer https://github.com/decentraland/explorer
-- Kernel https://github.com/decentraland/kernel
+- Explorer https://github.com/decentraland/unity-renderer
 - Peer library https://github.com/decentraland/catalyst-comms-peer 
 ### Peer Library 
 
@@ -120,25 +119,25 @@ The [Peer Library](https://github.com/decentraland/catalyst-comms-peer) manages 
 **Repositories**:
 - Library Source Code https://github.com/decentraland/catalyst-comms-peer
 - 
-### Kernel - Voice Chat Module
+### Browser Interface - Voice Chat Module
 
-This [Module](https://github.com/decentraland/explorer/tree/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/voice-chat-codec) is the codec to hook WebAudio & Worklets to comms
+This [Module](https://github.com/decentraland/unity-renderer/tree/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/voice-chat-codec) is the codec to hook WebAudio & Worklets to comms
  
-### Kernel - Client Comms
+### Browser Interface - Client Comms
 
-[Abstraction](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/shared/comms) over the Communication Protocol 
+[Abstraction](https://github.com/decentraland/unity-renderer/tree/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/shared/comms) over the Communication Protocol 
 
-### Kernel - Scene Loader System
+### Browser Interface - Scene Loader System
 
-[Module](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/decentraland-loader) that loads and unloads the scenes/parcels based on user position.
+[Module](https://github.com/decentraland/unity-renderer/blob/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/shared/scene-loader/) that loads and unloads the scenes/parcels based on user position.
 
-### Kernel - Scene
+### Browser Interface - Scene
 
-High level [wrapper](https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/unity-interface/UnityScene.ts#L19) around the runtime scene  
+High level [wrapper](https://github.com/decentraland/unity-renderer/blob/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/shared/scene-loader/) around the runtime scene  
 
-### Kernel - Avatar Scene
+### Browser Interface - Avatar Scene
 
-It is a regular Decentraland [Scene](https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/ui/avatar/avatarSystem.ts), it has the size of the world. And it renders the avatars using the SDK
+It is a regular Decentraland [Scene](https://github.com/decentraland/unity-renderer/tree/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/ui/avatar/avatarSystem.ts), it has the size of the world. And it renders the avatars using the SDK
 
 ### Matrix Client 
 
@@ -154,15 +153,15 @@ Like an ESB. Everything is connected to Sagas
 
 ## Explorer Website
 
-[REACT Application](https://github.com/decentraland/explorer-website) to load Kernel and Renderer
+[REACT Application](https://github.com/decentraland/explorer-website) to load the Explorer
 
 **Repositories**:
 - Web Site https://github.com/decentraland/explorer-website
 ## Scene Runtime 
 
-### Kernel - Runtime 
+### Scene Runtime repo
 
-The [Runtime](https://github.com/decentraland/explorer/blob/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/scene-system/sdk/SceneRuntime.ts) handles SDK bindings and messaging with the Scene in Kernel
+The [Runtime](https://github.com/decentraland/scene-runtime) handles SDK bindings and messaging with the Scene in the Explorer
 
 ### Compiler Bundle 
 

@@ -149,7 +149,7 @@ digraph G {
                 ]
                 ECS [
                     label=<ECS<FONT POINT-SIZE="10"><BR/>The public library to interact with Decentraland.<BR/>Sometimes people refers to the ECS as “The SDK”</FONT>>
-                    URL="https://github.com/decentraland/explorer/tree/f4c30a3cab1ef014e1f20efdb2a0a12ef6c996e0/kernel/packages/decentraland-ecs"
+                    URL="https://github.com/decentraland/js-sdk-toolchain/tree/5ba2a3616ea419a04974be07876850ed63eca7e2/packages/%40dcl/ecs"
                 ]
                 UserCode [
                     label=<User Code<FONT POINT-SIZE="10"><BR/>User generated code is part of the bundle<BR/> of the Scenes</FONT>>                    
@@ -165,20 +165,20 @@ digraph G {
         }        
         ClientComms[
             label=<Client Comms<FONT POINT-SIZE="10"><BR/><BR/>Abstraction over the communications protocols</FONT>>
-            URL="https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/shared/comms"
+            URL="https://github.com/decentraland/unity-renderer/tree/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/shared/comms"
         ]
         EthProvider[
             label="Ethereum Provider"
         ]
         ExplorerWebSite[
-            label=<Explorer Website<FONT POINT-SIZE="10"><BR/><BR/>React App to load kernel and renderer</FONT>>
-            URL="https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/shared/comms"
+            label=<Explorer Website<FONT POINT-SIZE="10"><BR/><BR/>React App to load the explorer</FONT>>
+            URL="https://github.com/decentraland/unity-renderer/tree/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/shared/comms"
         ]        
         ExplorerWebSite -> EthProvider
         ClientComms -> ExplorerWebSite
-        subgraph cluster_Kernel {            
-            label=<Kernel<FONT POINT-SIZE="10"><BR/><BR/>Code package to bind all low level constructs<BR/> of Decentraland to generate an<BR/> usable Explorer Arrows are omitted for clarity.<BR/> Assume everything is connected to Sagas.</FONT>>
-            URL="https://github.com/decentraland/kernel"
+        subgraph cluster_BrowserInterface {            
+            label=<BrowserInterface<FONT POINT-SIZE="10"><BR/><BR/>Code package to bind all low level constructs<BR/> of Decentraland to generate an<BR/> usable Explorer Arrows are omitted for clarity.<BR/> Assume everything is connected to Sagas.</FONT>>
+            URL="https://github.com/decentraland/unity-renderer/tree/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface"
             bgcolor=5 	     
             node [shape=ellipse]
             Sagas
@@ -200,19 +200,19 @@ digraph G {
         ]
         VoiceChat[
             label=<Voice Chat Module<BR/> <FONT POINT-SIZE="10">Set of components to hook<BR/>WebAudio and Worklets to comms</FONT>>
-            URL="https://github.com/decentraland/explorer/tree/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/voice-chat-codec"
+            URL="https://github.com/decentraland/unity-renderer/tree/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/voice-chat-codec"
         ]
         SceneLoader [
             label=<Scene Loader System<BR/> <FONT POINT-SIZE="10">High level wrapper around a runtime scene</FONT>>
-            URL="https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/decentraland-loader"
+            URL="https://github.com/decentraland/unity-renderer/blob/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/shared/scene-loader/"
         ]
         Scene [
             label=<Scene<BR/> <FONT POINT-SIZE="10">Loads and Unloads scenes around the User</FONT>>
-            URL="https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/unity-interface/UnityScene.ts#L19"
+            URL="https://github.com/decentraland/unity-renderer/blob/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/shared/scene-loader/"
         ]
         AvatarScene [
             label=<Avatar Scene<BR/> <FONT POINT-SIZE="10">It is a regular Decentraland Scene,.<BR/>it has the size of the world.<BR/> And it renders the avatars using the SDK</FONT>>
-            URL="https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/ui/avatar/avatarSystem.ts"
+            URL="https://github.com/decentraland/unity-renderer/tree/b16cd758edd9cdff7d384ac9f7950832fcbd6a3f/browser-interface/packages/ui/avatar/avatarSystem.ts"
         ]
         MatrixClient [
             label=<Matrix Client<BR/> <FONT POINT-SIZE="10">Abstraction over the Matrix protocol to<BR/> enable Friends list and private chats</FONT>>
@@ -222,7 +222,7 @@ digraph G {
             label=<Sagas<BR/> <FONT POINT-SIZE="10">Like an ESB: Everything is connected to sagas</FONT>>                    
         ]
         SceneRuntime[
-            label=<Scene Runtime<BR/> <FONT POINT-SIZE="10">Handles SDK bindings<br/>and messaging with the Scene in Kernel</FONT>>
+            label=<Scene Runtime<BR/> <FONT POINT-SIZE="10">Handles SDK bindings<br/>and messaging with the Scene in the Explorer</FONT>>
             URL="https://github.com/decentraland/matrix-client"
         ]
         CatalystPeer -> ClientComms                
