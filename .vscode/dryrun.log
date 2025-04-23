@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/matiaspentreath/repos/architecture'
+dot -Tpng architecture.dot > architecture.png
+make: Leaving directory `/Users/matiaspentreath/repos/architecture'
+ 
