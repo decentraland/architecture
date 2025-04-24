@@ -1,180 +1,111 @@
 ---
-title: "Platform"
+title: "Platform Overview"
 slug: /contributor/architecture/platform
 ---
 
-The following is a representation of the Decentraland Platform architecture and it's components: 
+This document provides an overview of the Decentraland Platform architecture and its components:
 
 ![architecture](architecture.png)
 
-## Index
+## Table of Contents
 
-  - [Index](#index)
-  - [Catalyst](#catalyst)
-    - [Backend for Frontend (BFF)](#backend-for-frontend-bff)
-    - [Archipelago Service](#archipelago-service)
-    - [NATS](#nats)
-    - [LiveKit](#livekit)
-    - [Lambdas](#lambdas)
-    - [Content Server](#content-server)
-    - [Nginx](#nginx)
-  - [CLI](#cli)
-  - [Catalyst Client](#catalyst-client)
-  - [Web Browser](#web-browser)
-    - [Peer Library](#peer-library)
-    - [Kernel - Voice Chat Module](#kernel-voice-chat-module)
-    - [Kernel - Client Comms](#kernel-client-comms)
-    - [Kernel - Scene Loader System](#kernel-scene-loader-system)
-    - [Kernel - Scene](#kernel-scene)
-    - [Kernel - Avatar Scene](#kernel-avatar-scene)
-    - [Matrix Client](#matrix-client)
-    - [Sagas](#sagas)
-    - [Synapse](#synapse)
-  - [Explorer Website](#explorer-website)
-  - [Scene Runtime](#scene-runtime)
-    - [Kernel - Runtime](#kernel-runtime)
-    - [Compiler Bundle](#compiler-bundle)
-      - [AMD](#amd)
-      - [ECS](#ecs)
-      - [User Code](#user-code)
+- [Catalyst](#catalyst) 
+  - [Archipelago Service](#archipelago-service)
+  - [NATS](#nats)
+  - [LiveKit](#livekit)
+  - [Lambdas](#lambdas)
+  - [Content Server](#content-server)
+  - [Nginx](#nginx)
+- [Catalyst Client](#catalyst-client)
+- [CLI](#cli)
 
+## Catalyst (Decentralized Content)
 
-## Catalyst
+Catalyst servers bundle various services that form the backbone of Decentraland, providing decentralized storage for most of the content required by clients.
 
-A Catalyst is a server that bundles different services. These services currently work as the backbone for Decentraland and run the decentralized storage for most of the content needed by the client and orchestrate the communications between peers. Some of these projects that are part of this bundle are:
+- [Lambdas](https://github.com/decentraland/catalyst/tree/main/lambdas): Offers utilities for Catalyst Server Clients/Consumers to retrieve or validate data, including ownership validations using the Subgraph API to query the blockchain.
+- [Content Server](https://github.com/decentraland/catalyst/tree/main/content): Stores entities like scenes, wearables, emotes, and profiles, automatically syncing with other approved servers.
+- [Archipelago Service](https://github.com/decentraland/archipelago-service) (Optional): Provides client communication capabilities, though most nodes rely on external Archipelago Workers for the default Decentraland realm.
+- [Nginx](https://nginx.org/en/docs/): Functions as a reverse proxy to route traffic within Catalyst Services.
 
-- [Backend for Frontend](https://github.com/decentraland/explorer-bff) (BFF)
-- [Archipelago Service](https://github.com/decentraland/archipelago-service)
-- [NATS](https://nats.io/)
-- [Lambdas](https://github.com/decentraland/catalyst/tree/main/lambdas)
-- [Content Server](https://github.com/decentraland/catalyst/tree/main/content)
+For running a Catalyst server, refer to the [Catalyst Owner](https://github.com/decentraland/catalyst-owner) repository. View available servers on the [Catalyst Monitor](https://catalyst-monitor.vercel.app/).
 
-If you just want to run a Catalyst server, please check the [Catalyst Owner](https://github.com/decentraland/catalyst-owner) repository. 
-You can check the list of available servers used by Decentraland in the [Catalyst Monitor](https://catalyst-monitor.vercel.app/)
+## Realm Provider
 
-### Backend for Frontend (BFF)
+The Realm Provider service delivers a realm description ([ADR-110](https://adr.decentraland.org/adr/ADR-110)) detailing the necessary services for client connection. It selects any Catalyst and Lambdas service from the Catalyst Network and provides access to the default MAIN realm, managed by the Archipelago Workers.
 
-This service was created to resolve client needs to enable faster development of new features without breaking the existing APIs. In the Catalyst context, it's used for the communications between peers connected to the client, its main responsibility is to manage the P2P signaling. 
+[Repository](https://github.com/decentraland/realm-provider)
 
-[Repo link](https://github.com/decentraland/explorer-bff)
+### Archipelago Workers
 
-### Archipelago Service
+Archipelago Workers support a standalone realm in Decentraland, implementing clustering logic to group users by their in-world positions, and providing WebSocket connections and stats services.
 
-Previously Archipelago was a [library](https://github.com/decentraland/archipelago) used by the [Lighthouse](https://github.com/decentraland/lighthouse), as now it needs to work with the different transports beyond P2P, it was converted into a Service. This service will have the same responsibility that the library did: group peers in clusters so they can communicate efficiently. On the other hand, the service will also need to be able to balance islands using the available transports and following a set of Catalyst Owner defined rules, in order to, for example, use LiveKit for an island in the Casino and P2P in a Plaza.
-
-[Repo link](https://github.com/decentraland/archipelago-service)
+[Repository](https://github.com/decentraland/archipelago-workers)
 
 ### NATS
 
-NATS is a message broker that enables the data exchange and communication between services. This is also a building block for future developments and will enable an easy way to connect services using subject-based messaging. In the context of the communication services architecture, it is used to communicate the BFF, Archipelago and LiveKit.
+NATS is a message broker facilitating data exchange and communication between services, enabling subject-based messaging for easy service connections.
 
-[Project link](https://nats.io/)
+[Project Link](https://nats.io/)
 
-### LiveKit
+### LiveKit (SaaS)
 
-LiveKit is an open source project that provides scalable, multi-user conferencing over WebRTC. Instead of doing a P2P network, peers are connected to a [Selective Forwarding Unit](https://github.com/decentraland/comms3-livekit-transport) (SFU) in charge of managing message relay and different quality aspects of the communication. This will be the added infrastructure in order to provide high-performance/high-quality communications between crowds on designated scenes.
+LiveKit is an open-source project for scalable, multi-user conferencing over WebRTC, utilizing a Selective Forwarding Unit (SFU) for message relay and communication quality management.
 
-[Project link](https://livekit.io/)
+[Project Link](https://livekit.io/)
 
-### Lambdas 
+## Asset Bundles System
 
-This service provides a set of utilities required by the Catalyst Server Clients/Consumers in order to retrieve or validate data.
-Some of the validations run in these functions are ownership related and for that it uses [The Graph](https://thegraph.com/hosted-service/subgraph/decentraland/collections-matic-mainnet) to query the blockchain. 
+The Asset Bundle System generates optimized asset versions for the Catalyst network. Upon deployment of a scene, emote, or wearable, conversions are initiated for each platform (macOS, WebGL, Windows), with the Asset Bundle Registry updated to ensure the latest bundles are available.
 
+- [Asset Bundle Registry](https://github.com/decentraland/asset-bundle-registry): Gateway for clients to retrieve available Asset Bundles and LODs, ensuring optimized textures and preventing empty scenes.
+- [Asset Bundle Converter](https://github.com/decentraland/asset-bundle-converter): Processes deployments, uploads optimized versions to the CDN, and notifies the registry.
+- [LODs Generator](https://github.com/decentraland/lods-generator): Processes scenes to generate versions with varying detail levels for resource-efficient rendering.
 
-### Content Server 
+## Badges System
 
-The Content Server currently stores many of the [Entities](https://github.com/decentraland/common-schemas/tree/main/src/platform) used in Decentraland. For example scenes, wearables and profiles. Content servers will automatically sync with each other, as long as they were all approved by the [DAO](http://governance.decentraland.org/).
+The Badges service manages user achievements in Decentraland, guiding users through platform activities.
 
-If you set up a local content server, it will receive all updates by those other DAO Catalysts. However, new deployments that happen on your local server will not be sent to other servers.
-
-### Nginx
-
-[Nginx](https://nginx.org/en/docs/) is the reverse proxy used to route traffic to the Catalysts Services.
+- [badges-api](https://github.com/decentraland/badges): Exposes endpoints for badge interaction.
+- [badges-processor](https://github.com/decentraland/badges): Listens to events, updates progress, grants badges, and handles notifications.
 
 ## CLI
 
-This [CLI](https://github.com/decentraland/cli) provides tooling/commands to assist you in the [scenes](https://github.com/decentraland-scenes/Awesome-Repository) development process. Some of the commands will help you scaffold a new scene project, locally start and visualize the scene in order to test it and deploy it to a content server to be incorporated in your Decentraland parcel.
+The [CLI](https://github.com/decentraland/cli) provides tools and commands for scene development, including project scaffolding, local testing, and deployment to content servers.
 
 **Repositories**:
-- CLI Source Code: https://github.com/decentraland/cli
-- Examples and Tutorials: https://github.com/decentraland-scenes/Awesome-Repository
+- [CLI Source Code](https://github.com/decentraland/cli)
+- [Examples and Tutorials](https://github.com/decentraland-scenes/Awesome-Repository)
 
 ## Catalyst Client
 
-This client [library](https://github.com/decentraland/catalyst-client) can be used to interact with Decentraland's Catalyst servers. You can both fetch data, or deploy new entities to the server you specify.
+This [library](https://github.com/decentraland/catalyst-client) facilitates interactions with Decentraland's Catalyst servers, enabling data fetching and entity deployment.
 
 **Repositories**:
-- Library Source Code https://github.com/decentraland/catalyst-client
+- [Library Source Code](https://github.com/decentraland/catalyst-client)
 
-## Web Browser
+## Worlds Content Server 
 
-**Repositories**:
-- Explorer https://github.com/decentraland/explorer
-- Kernel https://github.com/decentraland/kernel
-- Peer library https://github.com/decentraland/catalyst-comms-peer 
-### Peer Library 
+- [World's Content Server](https://github.com/decentraland/worlds-content-server) allows scenes to be uploaded using ENS NAMES instead of Genesis City LANDs. Worlds can be kept private or shared with others via a simple link. With the capacity to host up to 100 concurrent users, worlds can be utilized to host events, showcase work, or as a blank canvas to unleash creativity and experiment. 
 
-The [Peer Library](https://github.com/decentraland/catalyst-comms-peer) manages Websocket connections for WebRTC signaling, Islands, Notifications and Location Data and WebRTC Connections for peers positions, scene bus, global chat and voice chat (private chat goes through the Matrix Synapse Server and the Matrix Client). 
+## Auth 
 
-**Repositories**:
-- Library Source Code https://github.com/decentraland/catalyst-comms-peer
-- 
-### Kernel - Voice Chat Module
+- [Auth Server](https://github.com/decentraland/auth-server) Server in charge of communication between the decentraland desktop client and the [auth dapp](https://github.com/decentraland/auth) on the browser. Allows the desktop client to execute wallet methods (eth_sendTransaction, personal_sign, etc.) using the wallet the user has on their browser by leveraging the auth dapp. 
 
-This [Module](https://github.com/decentraland/explorer/tree/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/voice-chat-codec) is the codec to hook WebAudio & Worklets to comms
- 
-### Kernel - Client Comms
+## Social Service 
 
-[Abstraction](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/shared/comms) over the Communication Protocol 
+- [Social Service](https://github.com/decentraland/social-service-ea): This service is designed to manage social interactions, including friendship lifecycle management, connectivity status, and user blocking. 
 
-### Kernel - Scene Loader System
+## Camera Reel 
 
-[Module](https://github.com/decentraland/explorer/tree/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/decentraland-loader) that loads and unloads the scenes/parcels based on user position.
+## Exploration Games 
 
-### Kernel - Scene
+## Rewards
 
-High level [wrapper](https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/unity-interface/UnityScene.ts#L19) around the runtime scene  
+## Communications GateKeeper  
 
-### Kernel - Avatar Scene
+## Events API 
 
-It is a regular Decentraland [Scene](https://github.com/decentraland/explorer/blob/af59463dd3882516874c86bc926726bc557d5184/kernel/packages/ui/avatar/avatarSystem.ts), it has the size of the world. And it renders the avatars using the SDK
+## Places API 
 
-### Matrix Client 
-
-The [Matrix Client](https://github.com/decentraland/matrix-client) can be used to interact Decentraland's users, providing the ability to send private messages and add people as friends.
-
-### Sagas 
-
-Like an ESB. Everything is connected to Sagas
-
-### Synapse
-
-[Synapse](https://matrix.org/docs/projects/server/synapse) server is an implementation of the [Matrix Protocol](https://matrix.org/), created for secure, decentralized communications. In the context of Decentraland it is used to manage private chats between peers and friendships. 
-
-## Explorer Website
-
-[REACT Application](https://github.com/decentraland/explorer-website) to load Kernel and Renderer
-
-**Repositories**:
-- Web Site https://github.com/decentraland/explorer-website
-## Scene Runtime 
-
-### Kernel - Runtime 
-
-The [Runtime](https://github.com/decentraland/explorer/blob/df1d30412dcd1a94d933171a39796837aedc87a1/kernel/packages/scene-system/sdk/SceneRuntime.ts) handles SDK bindings and messaging with the Scene in Kernel
-
-### Compiler Bundle 
-
-#### AMD
-This [Module](https://github.com/decentraland/js-sdk-toolchain/tree/c648dcabc0ac1aade3cf143769f7e7f67ffba95b/packages/%40dcl/amd) manages loading of RPC modules to interact with different components of Decentraland
-
-**Repositories**
-- https://github.com/decentraland/js-sdk-toolchain
-#### ECS
-The public library to interact with Decentraland. Sometimes people refers to the ECS as “The SDK”
-
-#### User Code
-The user generated code is part of the bundle of the Scenes
-
-
+## Events Notifier 

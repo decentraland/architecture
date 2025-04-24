@@ -1,5 +1,5 @@
 digraph G { 
-    label="Decentraland Architecture" 
+    label="Decentraland Architecture for the Reference Client" 
     labelloc="t"
     fontsize=30
     fontname="Helvetica,Arial,sans-serif"
@@ -30,12 +30,12 @@ digraph G {
         bgcolor=4;                
         label = <Unity Explorer <BR/> <FONT POINT-SIZE="15">Decentralized Client</FONT>>;          
         ExplorerClient [
-            label=<Explorer<FONT POINT-SIZE="10"><BR/><BR/>Client</FONT>>;            
+            label=<Core<FONT POINT-SIZE="10"><BR/><BR/>Core Client Logic</FONT>>;            
         ]       
     }
 
     ExplorerClient -> RealmProvider [label=" "]; 
-    ExplorerClient -> Stats [label=" "];
+    ExplorerClient -> WebSocket [label=" ", lhead=cluster_archipelago_workers];
     ExplorerClient -> Gatekeeper [label=" "];
     ExplorerClient -> Auth [label=" "]; 
     ExplorerClient -> PlacesAPI [label=" "];
@@ -66,7 +66,7 @@ digraph G {
    
     SendGrid [
         label=<SendGrid (SaaS)<BR/> <FONT POINT-SIZE="10">Cloud Service to send emails</FONT>>;
-        URL="https://github.com/decentraland/notifications-workers";
+        URL="https://github.com/decentraland/notifications-workers";        
     ]
     
     CameraReel [
@@ -96,27 +96,21 @@ digraph G {
     LiveKit [
         label=<LiveKit (SaaS)<BR/> <FONT POINT-SIZE="10">High Quality Media Server</FONT>>;
         URL="https://livekit.io/";
-    ]               
-    Stats [
-        label=<Communications Stats<BR/> <FONT POINT-SIZE="10">Users Stats</FONT>>;
-        URL="https://github.com/decentraland/archipelago-workers";
-    ]     
+    ]                        
     WorkerSubgraph[
         label=<Subgraph<BR/> <FONT POINT-SIZE="10">Query Blockchain</FONT>>;
         URL="https://github.com/decentraland/lamb2";
-    ]           
-    
+    ]            
     Deployments [
         label=<Deployments to SQS<BR/> <FONT POINT-SIZE="10">Deployments Listener</FONT>>;
         URL="https://github.com/decentraland/deployments-to-sqs";
     ]
-
     NATS [
         label=<NATS<BR/> <FONT POINT-SIZE="10">Message Broker</FONT>>;
         URL="https://nats.io/";
     ]    
     Auth [
-        label=<Auth<BR/> <FONT POINT-SIZE="10">Authentication Service</FONT>>;
+        label=<Auth Server<BR/> <FONT POINT-SIZE="10">Authentication Service</FONT>>;
         URL="https://github.com/decentraland/auth";
     ]
     Gatekeeper [
@@ -146,9 +140,13 @@ digraph G {
             label=<Asset Bundle Converter<BR/> <FONT POINT-SIZE="10">Builds Asset Bundles for all platforms</FONT>>;
             URL="https://github.com/decentraland/asset-bundle-converter";
         ]
+        LODSGenerator [
+            label=<LODs Generator<BR/> <FONT POINT-SIZE="10">Generate scene Level of Details</FONT>>;
+            URL="https://github.com/decentraland/asset-bundle-converter";
+        ]
         AssetBundleRegistry -> AssetBundleConverter [style=invis];           
+        AssetBundleRegistry -> LODSGenerator [style=invis];
     }
-
 
     subgraph cluster_badges {
         label = <Badges System<BR/> <FONT POINT-SIZE="15">Badges workers</FONT>>;
@@ -157,7 +155,7 @@ digraph G {
         fontsize=24.0;
         URL="https://github.com/decentraland/catalyst-owner";        
         Badges [
-            label=<Badges<BR/> <FONT POINT-SIZE="10">User Badges</FONT>>;
+            label=<Badges API<BR/> <FONT POINT-SIZE="10">User Badges</FONT>>;
             URL="https://github.com/decentraland/badges";
         ]
         BadgesProcessor [
@@ -224,7 +222,12 @@ digraph G {
             label=<Archipelago Core<BR/> <FONT POINT-SIZE="10">Peers clustering logic</FONT>>;
             URL="https://nats.io/";
         ]     
+        Stats [
+            label=<Communications Stats<BR/> <FONT POINT-SIZE="10">Users Stats</FONT>>;
+            URL="https://github.com/decentraland/archipelago-workers";
+        ]
         WebSocket -> ArchipelagoCore [style=invis];  
+        ArchipelagoCore -> Stats [style=invis];
     }
 
     subgraph cluster_cli { 
@@ -242,62 +245,43 @@ digraph G {
             label=<build-ecs<FONT POINT-SIZE="10"><BR/>Bundles code from scenes, AMD and ECS<BR/>to generate deployable scenes</FONT>>;            
             URL="https://github.com/decentraland/js-sdk-toolchain/blob/c648dcabc0ac1aade3cf143769f7e7f67ffba95b/packages/%40dcl/build-ecs/index.ts";
         ]
-        CLI -> "build-ecs";
+        CLI -> "build-ecs"[style=invis];
     }
 
     Content -> Deployments;
-    Content -> WorkerSubgraph;         
+    Content -> WorkerSubgraph [ltail=cluster_catalyst];         
     Deployments -> AssetBundleConverter[lhead=cluster_ab];     
+    Deployments -> BadgesProcessor [lhead=cluster_badges];
+    BadgesProcessor -> EventsNotifier;
     Lambdas -> ProfileImages; 
     ProfileImages -> Deployments;     
     ArchipelagoCore -> NATS [dir=both, ltail=cluster_archipelago_workers];
-    ArchipelagoCore -> LiveKit;    
-    Stats -> NATS;    
+    ArchipelagoCore -> LiveKit[ltail=cluster_archipelago_workers];        
     Gatekeeper -> LiveKit;         
     Gatekeeper -> Deployments;  
-    Gatekeeper -> Worlds;  
-    Gatekeeper -> PlacesAPI;
+    Gatekeeper -> Worlds;      
     Gatekeeper -> EventsNotifier;
     Worlds -> LiveKit;
     Auth -> Nginx [label=" ", lhead=cluster_catalyst];     
     RealmProvider -> Lambdas [label=" ", lhead=cluster_catalyst];           
     RealmProvider -> WebSocket [label=" ", lhead=cluster_archipelago_workers];                 
     Notifications -> SendGrid;
-    EventsNotifier -> NotificationsProcessor; 
-    EventsNotifier -> BadgesProcessor;     
+    EventsNotifier -> NotificationsProcessor [label=" ", lhead=cluster_notifications];
+    EventsNotifier -> BadgesProcessor  [label=" ", lhead=cluster_badges];     
     ExplorationGames -> Rewards; 
-    Rewards -> Stats;
     SocialService -> CatalystClient;
-    SocialService -> NATS; 
-    SocialService -> Stats; 
+    SocialService -> NATS;     
+    SocialService -> WebSocket [label=" ", lhead=cluster_archipelago_workers];
     CatalystClient -> Nginx [lhead=cluster_catalyst];     
     PlacesAPI -> Lambdas [lhead=cluster_catalyst];         
+    PlacesAPI -> Stats [label=" ", lhead=cluster_archipelago_workers];
+    PlacesAPI -> Gatekeeper;
     Rewards -> WorkerSubgraph;
     Rewards -> EventsNotifier;
+    Rewards -> Stats [label=" ", lhead=cluster_archipelago_workers];
     Badges -> CatalystClient[ltail=cluster_badges];   
     Worlds -> NATS;
     CLI -> CatalystClient[ltail=cluster_cli]; 
     AssetBundleRegistry -> CatalystClient[ltail=cluster_ab]; 
-
-    {
-        rank = same;        
-        PlacesAPI;
-        RealmProvider;
-        Stats;
-        Gatekeeper;
-        Auth;
-        AssetBundleRegistry;
-        Notifications;
-        Badges;
-        CameraReel;
-        SocialService;
-        ExplorationGames;
-        Events; 
-    }      
-    {
-        rank = same;        
-        CLI;
-        Lambdas;
-    }
-    
+        
 }
