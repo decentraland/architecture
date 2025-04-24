@@ -33,6 +33,7 @@ digraph G {
             label=<Explorer<FONT POINT-SIZE="10"><BR/><BR/>Client</FONT>>;            
         ]       
     }
+
     ExplorerClient -> RealmProvider [label=" "]; 
     ExplorerClient -> Stats [label=" "];
     ExplorerClient -> Gatekeeper [label=" "];
@@ -52,10 +53,7 @@ digraph G {
     PlacesAPI [
         label=<Places API<BR/> <FONT POINT-SIZE="10">Places API</FONT>>;
         URL="https://github.com/decentraland/places";
-    ]
-    
-    
-
+    ]    
     RealmProvider [
         label=<Realm Provider<BR/> <FONT POINT-SIZE="10">Realm Services Description</FONT>>;
         URL="https://github.com/decentraland/realm-provider";
@@ -176,7 +174,7 @@ digraph G {
         CAdvisor [
             label=<CAdvisor<BR/> <FONT POINT-SIZE="10">Container Monitor</FONT>>;
         ]                           
-        Nginx -> Content [style=invis];    
+        Nginx -> Lambdas [style=invis];    
         Content -> CAdvisor [style=invis];                     
     }
 
@@ -222,18 +220,19 @@ digraph G {
     AssetBundleConverter -> AssetBundleRegistry;  
     Lambdas -> ProfileImages; 
     ProfileImages -> Deployments; 
-    WebSocket -> NATS [dir=both];
-    ArchipelagoCore -> NATS [dir=both];
+    
+    ArchipelagoCore -> NATS [dir=both, ltail=cluster_archipelago_workers];
     ArchipelagoCore -> LiveKit;    
     Stats -> NATS;    
     Gatekeeper -> LiveKit;         
     Gatekeeper -> Deployments;  
     Gatekeeper -> Worlds;  
+    Gatekeeper -> PlacesAPI;
+    Gatekeeper -> EventsNotifier;
     Worlds -> LiveKit;
     Auth -> Nginx [label=" ", lhead=cluster_catalyst];     
-    RealmProvider -> Nginx [label=" ", lhead=cluster_catalyst];           
-    RealmProvider -> WebSocket [label=" ", lhead=cluster_archipelago_workers];         
-    CLI -> Content[lhead=cluster_catalyst];    
+    RealmProvider -> Lambdas [label=" ", lhead=cluster_catalyst];           
+    RealmProvider -> WebSocket [label=" ", lhead=cluster_archipelago_workers];                 
     Notifications -> SendGrid;
     EventsNotifier -> NotificationsProcessor; 
     EventsNotifier -> BadgesProcessor; 
@@ -245,7 +244,12 @@ digraph G {
     SocialService -> NATS; 
     SocialService -> Stats; 
     CatalystClient -> Nginx [lhead=cluster_catalyst];     
-    PlacesAPI -> Lambdas [label=" ", lhead=cluster_archipelago_workers];         
+    PlacesAPI -> Lambdas [lhead=cluster_catalyst];         
+    Rewards -> WorkerSubgraph;
+    Rewards -> EventsNotifier;
+    Badges -> CatalystClient;   
+    Worlds -> NATS;
+    CLI -> CatalystClient[ltail=cluster_cli];
 
     {
         rank = same;        
@@ -261,13 +265,11 @@ digraph G {
         SocialService;
         ExplorationGames;
         Events; 
-    }  
+    }      
     {
         rank = same;        
-        CatalystClient;
-        
-        
-                      
-    }               
+        CLI;
+        Lambdas;
+    }
     
 }
