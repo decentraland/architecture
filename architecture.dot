@@ -39,10 +39,10 @@ digraph G {
     ExplorerClient -> Gatekeeper [label=" "];
     ExplorerClient -> Auth [label=" "]; 
     ExplorerClient -> PlacesAPI [label=" "];
-    ExplorerClient -> AssetBundleRegistry [label = " "];
+    ExplorerClient -> AssetBundleRegistry [label = " ", lhead=cluster_ab];
     ExplorerClient -> EventsNotifier [label=" "];
-    ExplorerClient -> Notifications [label=" "];
-    ExplorerClient -> Badges [label=" "];
+    ExplorerClient -> Notifications [label=" ", lhead=cluster_notifications];
+    ExplorerClient -> Badges [label=" ", lhead=cluster_badges];
     ExplorerClient -> CameraReel [label=" "];
     ExplorerClient -> SocialService [label=" "];
     ExplorerClient -> ExplorationGames [label=" "];
@@ -58,38 +58,17 @@ digraph G {
         label=<Realm Provider<BR/> <FONT POINT-SIZE="10">Realm Services Description</FONT>>;
         URL="https://github.com/decentraland/realm-provider";
     ]
-    AssetBundleRegistry [
-        label=<Asset Bundle Registry<BR/> <FONT POINT-SIZE="10">Asset Bundles</FONT>>;
-        URL="https://github.com/decentraland/asset-bundle-registry";
-    ]
-    AssetBundleConverter [
-        label=<Asset Bundle Converter<BR/> <FONT POINT-SIZE="10">Builds Asset Bundles for all platforms</FONT>>;
-        URL="https://github.com/decentraland/asset-bundle-converter";
-    ]
+    
     EventsNotifier [
         label=<Events Notifier<BR/> <FONT POINT-SIZE="10">User Events</FONT>>;
         URL="https://github.com/decentraland/notifications-workers";
     ]
-    Notifications [
-        label=<Notifications Inbox<BR/> <FONT POINT-SIZE="10">User Notifications</FONT>>;
-        URL="https://github.com/decentraland/notifications-workers";
-    ]
-    NotificationsProcessor [
-        label=<Notifications Processor<BR/> <FONT POINT-SIZE="10">Generate user Notifications</FONT>>;
-        URL="https://github.com/decentraland/notifications-workers";
-    ]
+   
     SendGrid [
         label=<SendGrid (SaaS)<BR/> <FONT POINT-SIZE="10">Cloud Service to send emails</FONT>>;
         URL="https://github.com/decentraland/notifications-workers";
     ]
-    Badges [
-        label=<Badges<BR/> <FONT POINT-SIZE="10">User Badges</FONT>>;
-        URL="https://github.com/decentraland/badges";
-    ]
-    BadgesProcessor [
-        label=<Badges Processor<BR/> <FONT POINT-SIZE="10">Grant Badges to Users</FONT>>;
-        URL="https://github.com/decentraland/badges";
-    ]
+    
     CameraReel [
         label=<Camera Reel<BR/> <FONT POINT-SIZE="10">Camera Reel</FONT>>;
         URL="https://github.com/decentraland/camera-reel-service";
@@ -152,6 +131,58 @@ digraph G {
         label=<Profile Images<BR/> <FONT POINT-SIZE="10">Generate Avatar images</FONT>>;
         URL="https://github.com/decentraland/profile-images";
     ]
+
+    subgraph cluster_ab {
+        label = <Asset Bundles System<BR/> <FONT POINT-SIZE="15">Optimized Assets</FONT>>;
+        colorscheme="pubugn9";
+        bgcolor=4;
+        fontsize=24.0;
+        URL="https://github.com/decentraland/catalyst-owner";        
+        AssetBundleRegistry [
+            label=<Asset Bundle Registry<BR/> <FONT POINT-SIZE="10">Asset Bundles</FONT>>;
+            URL="https://github.com/decentraland/asset-bundle-registry";
+        ]
+        AssetBundleConverter [
+            label=<Asset Bundle Converter<BR/> <FONT POINT-SIZE="10">Builds Asset Bundles for all platforms</FONT>>;
+            URL="https://github.com/decentraland/asset-bundle-converter";
+        ]
+        AssetBundleRegistry -> AssetBundleConverter [style=invis];           
+    }
+
+
+    subgraph cluster_badges {
+        label = <Badges System<BR/> <FONT POINT-SIZE="15">Badges workers</FONT>>;
+        colorscheme="pubugn9";
+        bgcolor=4;
+        fontsize=24.0;
+        URL="https://github.com/decentraland/catalyst-owner";        
+        Badges [
+            label=<Badges<BR/> <FONT POINT-SIZE="10">User Badges</FONT>>;
+            URL="https://github.com/decentraland/badges";
+        ]
+        BadgesProcessor [
+            label=<Badges Processor<BR/> <FONT POINT-SIZE="10">Grant Badges to Users</FONT>>;
+            URL="https://github.com/decentraland/badges";
+        ]
+        Badges -> BadgesProcessor [style=invis];           
+    }
+
+    subgraph cluster_notifications {
+        label = <Notifications System<BR/> <FONT POINT-SIZE="15">Notifications workers</FONT>>;
+        colorscheme="pubugn9";
+        bgcolor=4;
+        fontsize=24.0;
+        URL="https://github.com/decentraland/catalyst-owner";        
+        Notifications [
+            label=<Notifications Inbox<BR/> <FONT POINT-SIZE="10">User Notifications</FONT>>;
+            URL="https://github.com/decentraland/notifications-workers";
+        ]
+        NotificationsProcessor [
+            label=<Notifications Processor<BR/> <FONT POINT-SIZE="10">Generate user Notifications</FONT>>;
+            URL="https://github.com/decentraland/notifications-workers";
+        ]
+        Notifications -> NotificationsProcessor [style=invis];           
+    }
 
     subgraph cluster_catalyst {
         label = <Catalyst <BR/> <FONT POINT-SIZE="15">Decentralized Servers</FONT>>;
@@ -216,11 +247,9 @@ digraph G {
 
     Content -> Deployments;
     Content -> WorkerSubgraph;         
-    Deployments -> AssetBundleConverter; 
-    AssetBundleConverter -> AssetBundleRegistry;  
+    Deployments -> AssetBundleConverter[lhead=cluster_ab];     
     Lambdas -> ProfileImages; 
-    ProfileImages -> Deployments; 
-    
+    ProfileImages -> Deployments;     
     ArchipelagoCore -> NATS [dir=both, ltail=cluster_archipelago_workers];
     ArchipelagoCore -> LiveKit;    
     Stats -> NATS;    
@@ -235,9 +264,7 @@ digraph G {
     RealmProvider -> WebSocket [label=" ", lhead=cluster_archipelago_workers];                 
     Notifications -> SendGrid;
     EventsNotifier -> NotificationsProcessor; 
-    EventsNotifier -> BadgesProcessor; 
-    Notifications -> NotificationsProcessor; 
-    Badges -> BadgesProcessor;
+    EventsNotifier -> BadgesProcessor;     
     ExplorationGames -> Rewards; 
     Rewards -> Stats;
     SocialService -> CatalystClient;
@@ -247,9 +274,10 @@ digraph G {
     PlacesAPI -> Lambdas [lhead=cluster_catalyst];         
     Rewards -> WorkerSubgraph;
     Rewards -> EventsNotifier;
-    Badges -> CatalystClient;   
+    Badges -> CatalystClient[ltail=cluster_badges];   
     Worlds -> NATS;
-    CLI -> CatalystClient[ltail=cluster_cli];
+    CLI -> CatalystClient[ltail=cluster_cli]; 
+    AssetBundleRegistry -> CatalystClient[ltail=cluster_ab]; 
 
     {
         rank = same;        
