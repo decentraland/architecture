@@ -34,22 +34,26 @@ digraph G {
         ]       
     }
 
-    ExplorerClient -> RealmProvider [label=" "]; 
-    ExplorerClient -> WebSocket [label=" ", lhead=cluster_archipelago_workers];
-    ExplorerClient -> Gatekeeper [label=" "];
-    ExplorerClient -> Auth [label=" "]; 
-    ExplorerClient -> PlacesAPI [label=" "];
-    ExplorerClient -> AssetBundleRegistry [label = " ", lhead=cluster_ab];
-    ExplorerClient -> EventsNotifier [label=" "];
-    ExplorerClient -> Notifications [label=" ", lhead=cluster_notifications];
-    ExplorerClient -> Badges [label=" ", lhead=cluster_badges];
-    ExplorerClient -> CameraReel [label=" "];
-    ExplorerClient -> SocialService [label=" "];
-    ExplorerClient -> ExplorationGames [label=" "];
-    ExplorerClient -> Events [label=" "];
-    ExplorerClient -> Worlds [label=" "];
-    ExplorerClient -> Atlas [label=" "];
+    ExplorerClient -> DecentralandGateway  
 
+    DecentralandGateway -> RealmProvider [label=" "]; 
+    DecentralandGateway -> WebSocket [label=" ", lhead=cluster_archipelago_workers];
+    DecentralandGateway -> Gatekeeper [label=" "];
+    DecentralandGateway -> Auth [label=" "]; 
+    DecentralandGateway -> PlacesAPI [label=" "];
+    DecentralandGateway -> AssetBundleRegistry [label = " ", lhead=cluster_ab];
+    DecentralandGateway -> EventsNotifier [label=" "];
+    DecentralandGateway -> Notifications [label=" ", lhead=cluster_notifications];
+    DecentralandGateway -> Badges [label=" ", lhead=cluster_badges];
+    DecentralandGateway -> CameraReel [label=" "];
+    DecentralandGateway -> SocialService [label=" "];
+    DecentralandGateway -> ExplorationGames [label=" "];
+    DecentralandGateway -> Events [label=" "];
+    DecentralandGateway -> Worlds [label=" "];
+    DecentralandGateway -> Atlas [label=" "];
+    DecentralandGateway -> CreditsServer [label=" "];
+    DecentralandGateway -> ImageConvertionService [label=" "];
+    DecentralandGateway -> TranslationAPI[label=" "];
     
     PlacesAPI [
         label=<Places API<BR/> <FONT POINT-SIZE="10">Places API</FONT>>;
@@ -75,7 +79,7 @@ digraph G {
         URL="https://github.com/decentraland/camera-reel-service";
     ]
     SocialService [
-        label=<Social Service<BR/> <FONT POINT-SIZE="10">Friends</FONT>>;
+        label=<Social Service<BR/> <FONT POINT-SIZE="10">Friends &amp; Communities</FONT>>;
         URL="https://github.com/decentraland/social-service-ea";
     ]
     ExplorationGames [
@@ -126,6 +130,22 @@ digraph G {
         label=<Atlas Server<BR/> <FONT POINT-SIZE="10">Atlas Server</FONT>>;
         URL="https://github.com/decentraland/atlas-server";
     ]
+    Lambdas [
+            label=<Lambdas<BR/> <FONT POINT-SIZE="10">Catalyst Lambdas</FONT>>;
+            URL="https://github.com/decentraland/lamb2";
+    ]
+    CreditsServer [
+        label=<CreditsServer API<BR/> <FONT POINT-SIZE="10">Credits Server</FONT>>;
+        URL="https://github.com/decentraland/credits-server";
+    ]  
+    ImageConvertionService [
+        label=<Image Convertion Service<BR/> <FONT POINT-SIZE="10">Metamorph</FONT>>;
+        URL="https://github.com/decentraland/metamorph";
+    ]
+    TranslationAPI [
+        label=<Language Translation API<BR/> <FONT POINT-SIZE="10">LibreTranslate</FONT>>;
+        URL="https://github.com/decentraland/autotranslate-server";
+    ]
 
     subgraph cluster_profile {
         label = <Avatar Images<BR/> <FONT POINT-SIZE="15">Create Face and Body images</FONT>>;
@@ -142,7 +162,7 @@ digraph G {
             URL="https://github.com/decentraland/asset-bundle-converter";
         ]
         ProfileImages -> ProfileProducer [style=invis];        
-    }
+    }    
 
     subgraph cluster_ab {
         label = <Asset Bundles System<BR/> <FONT POINT-SIZE="15">Optimized Assets</FONT>>;
@@ -214,10 +234,7 @@ digraph G {
             label=<Content Server<BR/> <FONT POINT-SIZE="10">Assets Storage</FONT>>;
             URL="https://github.com/decentraland/catalyst";
         ]        
-        Lambdas [
-            label=<Lambdas<BR/> <FONT POINT-SIZE="10">Catalyst Lambdas</FONT>>;
-            URL="https://github.com/decentraland/lamb2";
-        ]
+        
         CAdvisor [
             label=<CAdvisor<BR/> <FONT POINT-SIZE="10">Container Monitor</FONT>>;
         ]                           
@@ -328,6 +345,6 @@ digraph G {
     AssetBundleRegistry -> CatalystClient[ltail=cluster_ab]; 
     WorkerSubgraph -> Squid[lhead=cluster_indexers]; 
     Atlas -> WorkerSubgraph;
-    
+    CreditsServer -> Squid [label=" ", lhead=cluster_indexers];
         
 }
