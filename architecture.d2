@@ -1,0 +1,91 @@
+# Decentraland Platform Architecture
+#
+# Render: d2 architecture.d2 architecture.svg --sketch
+# Install: https://d2lang.com/tour/install
+
+grid-rows: 2
+
+# =============================================================================
+# Client (full width, top)
+# =============================================================================
+
+client: DCL Client {
+  style.border-radius: 15
+}
+
+# =============================================================================
+# Middle section: layers (left) + NATS sidebar (right)
+# =============================================================================
+
+middle: "" {
+  grid-columns: 2
+  style.stroke-width: 0
+  style.fill: transparent
+
+  # Left column: stacked layers
+  stack: "" {
+    grid-rows: 5
+    style.stroke-width: 0
+    style.fill: transparent
+
+    connectors: "" {
+      grid-columns: 2
+      style.stroke-width: 0
+      style.fill: transparent
+
+      ws: WS Connector {
+        width: 300
+      }
+      http: HTTP Gateway {
+        width: 300
+      }
+    }
+
+    realtime: REAL TIME {
+      grid-columns: 3
+
+      realm: Realm { width: 250 }
+      archipelago: Archipelago { width: 250 }
+      livekit: LiveKit { width: 250 }
+    }
+
+    content: Content Layer {
+      grid-columns: 5
+
+      registry: Registry { width: 155 }
+      worlds: Worlds Content Server { width: 155 }
+      catalyst: Catalyst { width: 155 }
+      ab: Asset Bundles { width: 155 }
+      lods: LODs { width: 155 }
+    }
+
+    features: Feature Servers {
+      grid-columns: 6
+      grid-rows: 2
+
+      badges: Badges
+      notifications: Notifications
+      rewards: Rewards
+      credits: Credits
+      discovery: "Discovery\n(Events & Places)" {
+        shape: rectangle
+      }
+      camera-reel: Camera Reel
+      social: Social
+      profile-images: Profile Images
+      atlas: Atlas
+      auth: Auth
+      exploration-games: Exploration Games
+      translation: "Language\nTranslation" {
+        shape: rectangle
+      }
+    }
+
+    sqs: Service to Service (SQS)
+  }
+
+  # Right column: NATS vertical sidebar
+  nats: "Service to Client\n(NATS)" {
+    shape: rectangle
+  }
+}
