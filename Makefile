@@ -1,2 +1,5 @@
 architecture:
-	dot -Tpng architecture.dot > architecture.png
+	d2 architecture.d2 docs/architecture.svg --sketch
+	d2 architecture.d2 docs/architecture.png --sketch
+
+.PHONY: architecture
