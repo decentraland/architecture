@@ -33,10 +33,10 @@ middle: "" {
       style.stroke-width: 0
       style.fill: transparent
 
-      ws: WS Connector {
+      ws: "WebSocket Connector\n(Bidirection backend communications)" {
         width: 300
       }
-      http: HTTP Gateway {
+      http: "HTTP Gateway\n(Async communication)" {
         width: 300
       }
     }
@@ -44,40 +44,48 @@ middle: "" {
     realtime: REAL TIME {
       grid-columns: 3
 
-      realm: Realm { width: 250 }
-      archipelago: Archipelago { width: 250 }
-      livekit: LiveKit { width: 250 }
+      realm: "Realm\n(main services entry\n point for a client)" { width: 250 }
+      archipelago: "Users clustering logic\n(Archipelago)" { width: 250 }
+      livekit: "Communications System Transport\n(LiveKit)" { width: 250 }
     }
 
     content: Content Layer {
       grid-columns: 5
 
-      registry: Registry { width: 155 }
-      worlds: Worlds Content Server { width: 155 }
-      catalyst: Catalyst { width: 155 }
-      ab: Asset Bundles { width: 155 }
-      lods: LODs { width: 155 }
+      registry: "Content Resolver\n(Caching / Registry)" { width: 190 }
+      worlds: "Content Server:\nWorlds" { width: 190 }
+      catalyst: "Content Server: Genesis City\nAssets and Identities\n(Catalyst)" { width: 190 }
+      ab: "Optimized Client Assets\n(Asset Bundles)" { width: 190 }
+      lods: "Scenes:\nLevel of Details" { width: 190 }
     }
 
     features: Feature Servers {
       grid-columns: 6
       grid-rows: 2
 
-      badges: Badges
-      notifications: Notifications
-      rewards: Rewards
-      credits: Credits
+      badges: Badges { width: 140 }
+      notifications: Notifications { width: 140 }
+      rewards: Rewards { width: 140 }
+      credits: Credits { width: 140 }
       discovery: "Discovery\n(Events & Places)" {
         shape: rectangle
+        width: 140
       }
-      camera-reel: Camera Reel
-      social: Social
-      profile-images: Profile Images
-      atlas: Atlas
-      auth: Auth
-      exploration-games: Exploration Games
+      camera-reel: "Camera Reel" { width: 140 }
+      social: "Social\n(Friendships &\nCommunities)" {
+        shape: rectangle
+        width: 140
+      }
+      profile-images: "Profile Images" { width: 140 }
+      atlas: Atlas { width: 140 }
+      auth: Auth { width: 140 }
+      exploration-games: "Exploration\nGames" {
+        shape: rectangle
+        width: 140
+      }
       translation: "Language\nTranslation" {
         shape: rectangle
+        width: 140
       }
     }
 
