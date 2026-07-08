@@ -83,11 +83,42 @@
     padding: 10px; min-height: 40px;
   }
   #node-info b { color: var(--text); }
-  #orphan-list {
-    max-height: 200px; overflow-y: auto; font-size: 12px; color: var(--text-dim);
-    background: #0d0f13; border: 1px solid var(--panel-border); border-radius: 6px; padding: 8px 10px;
+  .orphan-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .orphan-count-badge {
+    font-size: 10.5px; color: var(--text-dim); background: #0d0f13;
+    border: 1px solid var(--panel-border); border-radius: 10px; padding: 1px 8px;
   }
-  #orphan-list div { padding: 1px 0; }
+  #orphan-copy {
+    margin-left: auto; font-size: 11px; padding: 3px 9px; border-radius: 5px;
+    border: 1px solid var(--panel-border); background: #21252d; color: var(--text);
+    cursor: pointer;
+  }
+  #orphan-copy:hover { background: #2a2f39; }
+  #orphan-copy.copied { border-color: #59A14F; color: #8fd39a; }
+  #orphan-list {
+    max-height: 320px; overflow-y: auto; font-size: 12.5px; color: var(--text-dim);
+    background: #0d0f13; border: 1px solid var(--panel-border); border-radius: 6px; padding: 4px 4px;
+  }
+  .orphan-group + .orphan-group { margin-top: 6px; }
+  .orphan-group-title {
+    display: flex; align-items: center; gap: 6px; padding: 4px 6px 3px 6px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: .04em; font-weight: 600;
+    color: var(--text-dim); position: sticky; top: 0; background: #0d0f13; z-index: 1;
+  }
+  .orphan-group-title .lang-swatch { width: 8px; height: 8px; }
+  .orphan-row {
+    display: flex; align-items: center; gap: 7px; padding: 4px 6px; border-radius: 4px;
+    text-decoration: none; color: var(--text);
+  }
+  .orphan-row:hover { background: #1f232b; }
+  .orphan-row:hover .orphan-name { text-decoration: underline; }
+  .orphan-row .lang-swatch { width: 8px; height: 8px; flex-shrink: 0; }
+  .orphan-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .orphan-fork-badge {
+    font-size: 9.5px; color: var(--text-dim); background: #21252d; border: 1px solid var(--panel-border);
+    border-radius: 8px; padding: 0 6px; flex-shrink: 0;
+  }
+  .orphan-empty { padding: 10px 6px; font-size: 12px; color: var(--text-dim); font-style: italic; }
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-thumb { background: #333844; border-radius: 4px; }
 </style>
@@ -125,7 +156,11 @@
     </div>
 
     <div class="section">
-      <div class="section-title">Orphan repos (64)</div>
+      <div class="section-title">Orphan repos</div>
+      <div class="orphan-toolbar">
+        <span class="orphan-count-badge" id="orphan-count">64 total</span>
+        <button id="orphan-copy" title="Copy visible repo names to clipboard">Copy list</button>
+      </div>
       <div id="orphan-list"></div>
     </div>
   </div>
@@ -296,6 +331,7 @@ const DATA = {"nodes":[{"id":"mana","label":"mana","language":"Solidity","degree
   document.getElementById('search').addEventListener('input', function(e) {
     state.search = e.target.value.trim();
     applyFilters();
+    renderOrphanList();
   });
 
   // ---- language checkboxes ----
@@ -349,11 +385,80 @@ const DATA = {"nodes":[{"id":"mana","label":"mana","language":"Solidity","degree
 
   // ---- orphan list panel ----
   const orphanListEl = document.getElementById('orphan-list');
-  DATA.orphans.slice().sort().forEach(name => {
-    const div = document.createElement('div');
-    div.textContent = name;
-    orphanListEl.appendChild(div);
+  const orphanCountEl = document.getElementById('orphan-count');
+  const orphanCopyBtn = document.getElementById('orphan-copy');
+  const nodeById = new Map(allNodes.map(n => [n.id, n]));
+  const totalOrphans = DATA.orphans.length;
+
+  function renderOrphanList() {
+    const term = state.search.toLowerCase();
+    const visible = DATA.orphans.filter(name => !term || name.toLowerCase().includes(term));
+
+    orphanListEl.innerHTML = '';
+    if (!visible.length) {
+      const empty = document.createElement('div');
+      empty.className = 'orphan-empty';
+      empty.textContent = 'No orphan repos match "' + state.search + '".';
+      orphanListEl.appendChild(empty);
+    } else {
+      // group by language, groups sorted alphabetically, repos alphabetical within group
+      const byLang = new Map();
+      visible.forEach(name => {
+        const n = nodeById.get(name);
+        const lang = (n && n.language) || 'Unknown';
+        if (!byLang.has(lang)) byLang.set(lang, []);
+        byLang.get(lang).push(name);
+      });
+      const sortedLangs = Array.from(byLang.keys()).sort((a, b) => a.localeCompare(b));
+      sortedLangs.forEach(lang => {
+        const names = byLang.get(lang).sort((a, b) => a.localeCompare(b));
+        const group = document.createElement('div');
+        group.className = 'orphan-group';
+
+        const title = document.createElement('div');
+        title.className = 'orphan-group-title';
+        title.innerHTML =
+          '<span class="lang-swatch" style="background:' + (langColor[lang] || '#888') + '"></span>' +
+          '<span>' + lang + '</span><span style="margin-left:auto;font-weight:400;">' + names.length + '</span>';
+        group.appendChild(title);
+
+        names.forEach(name => {
+          const n = nodeById.get(name);
+          const row = document.createElement('a');
+          row.className = 'orphan-row';
+          row.href = 'https://github.com/decentraland/' + encodeURIComponent(name);
+          row.target = '_blank';
+          row.rel = 'noopener noreferrer';
+          row.title = 'Open decentraland/' + name + ' on GitHub';
+          row.innerHTML =
+            '<span class="lang-swatch" style="background:' + (langColor[lang] || '#888') + '"></span>' +
+            '<span class="orphan-name">' + name + '</span>' +
+            (n && n.fork ? '<span class="orphan-fork-badge">fork</span>' : '');
+          group.appendChild(row);
+        });
+
+        orphanListEl.appendChild(group);
+      });
+    }
+
+    orphanCountEl.textContent = (state.search ? visible.length + ' / ' + totalOrphans : totalOrphans + ' total');
+  }
+
+  orphanCopyBtn.addEventListener('click', function() {
+    const term = state.search.toLowerCase();
+    const visible = DATA.orphans.filter(name => !term || name.toLowerCase().includes(term));
+    const text = visible.slice().sort((a, b) => a.localeCompare(b)).join('\n');
+    navigator.clipboard.writeText(text).then(function() {
+      orphanCopyBtn.textContent = 'Copied!';
+      orphanCopyBtn.classList.add('copied');
+      setTimeout(function() {
+        orphanCopyBtn.textContent = 'Copy list';
+        orphanCopyBtn.classList.remove('copied');
+      }, 1500);
+    });
   });
+
+  renderOrphanList();
 
   // initial counter
   applyFilters();
