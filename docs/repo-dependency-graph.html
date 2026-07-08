@@ -108,16 +108,23 @@
   .orphan-group-title .lang-swatch { width: 8px; height: 8px; }
   .orphan-row {
     display: flex; align-items: center; gap: 7px; padding: 4px 6px; border-radius: 4px;
-    text-decoration: none; color: var(--text);
+    color: var(--text); cursor: pointer; user-select: none;
   }
   .orphan-row:hover { background: #1f232b; }
   .orphan-row:hover .orphan-name { text-decoration: underline; }
+  .orphan-row:focus-visible { outline: 1px solid var(--accent); background: #1f232b; }
+  .orphan-row.selected { background: #24303f; box-shadow: inset 2px 0 0 var(--accent); }
   .orphan-row .lang-swatch { width: 8px; height: 8px; flex-shrink: 0; }
   .orphan-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .orphan-fork-badge {
     font-size: 9.5px; color: var(--text-dim); background: #21252d; border: 1px solid var(--panel-border);
     border-radius: 8px; padding: 0 6px; flex-shrink: 0;
   }
+  .orphan-ext-link {
+    flex-shrink: 0; color: var(--text-dim); text-decoration: none; font-size: 12px;
+    padding: 0 2px; border-radius: 3px; line-height: 1;
+  }
+  .orphan-ext-link:hover { color: var(--text); background: #2a2f39; }
   .orphan-empty { padding: 10px 6px; font-size: 12px; color: var(--text-dim); font-style: italic; }
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-thumb { background: #333844; border-radius: 4px; }
@@ -308,22 +315,44 @@ const DATA = {"nodes":[{"id":"mana","label":"mana","language":"Solidity","degree
     })));
   }
 
+  function showNodeInfo(nodeId) {
+    const n = allNodes.find(x => x.id === nodeId);
+    if (!n) return;
+    const outgoing = allEdges.filter(e => e.from === nodeId).map(e => e.to);
+    const incoming = allEdges.filter(e => e.to === nodeId).map(e => e.from);
+    document.getElementById('node-info').innerHTML =
+      '<b>' + n.id + '</b><br/>' +
+      'Language: ' + n.language + '<br/>' +
+      'Degree: ' + n.degree + (n.fork ? ' (fork)' : '') + '<br/>' +
+      'Depends on (' + outgoing.length + '): ' + (outgoing.length ? outgoing.join(', ') : '&mdash;') + '<br/>' +
+      'Depended on by (' + incoming.length + '): ' + (incoming.length ? incoming.join(', ') : '&mdash;');
+  }
+
+  function clearSelection() {
+    clearHighlight();
+    network.unselectAll();
+    document.getElementById('node-info').textContent = 'Click a node to see details.';
+    markSelectedOrphanRow(null);
+  }
+
+  function selectNode(nodeId, opts) {
+    opts = opts || {};
+    highlightNode(nodeId);
+    showNodeInfo(nodeId);
+    markSelectedOrphanRow(nodeId);
+    if (nodesDataset.get(nodeId) && !nodesDataset.get(nodeId).hidden) {
+      network.selectNodes([nodeId]);
+      if (opts.focus !== false) {
+        network.focus(nodeId, { scale: 1.1, animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+      }
+    }
+  }
+
   network.on('click', function(params) {
     if (params.nodes && params.nodes.length > 0) {
-      const nodeId = params.nodes[0];
-      highlightNode(nodeId);
-      const n = allNodes.find(x => x.id === nodeId);
-      const outgoing = allEdges.filter(e => e.from === nodeId).map(e => e.to);
-      const incoming = allEdges.filter(e => e.to === nodeId).map(e => e.from);
-      document.getElementById('node-info').innerHTML =
-        '<b>' + n.id + '</b><br/>' +
-        'Language: ' + n.language + '<br/>' +
-        'Degree: ' + n.degree + (n.fork ? ' (fork)' : '') + '<br/>' +
-        'Depends on (' + outgoing.length + '): ' + (outgoing.length ? outgoing.join(', ') : '&mdash;') + '<br/>' +
-        'Depended on by (' + incoming.length + '): ' + (incoming.length ? incoming.join(', ') : '&mdash;');
+      selectNode(params.nodes[0], { focus: false });
     } else {
-      clearHighlight();
-      document.getElementById('node-info').textContent = 'Click a node to see details.';
+      clearSelection();
     }
   });
 
@@ -424,16 +453,18 @@ const DATA = {"nodes":[{"id":"mana","label":"mana","language":"Solidity","degree
 
         names.forEach(name => {
           const n = nodeById.get(name);
-          const row = document.createElement('a');
+          const row = document.createElement('div');
           row.className = 'orphan-row';
-          row.href = 'https://github.com/decentraland/' + encodeURIComponent(name);
-          row.target = '_blank';
-          row.rel = 'noopener noreferrer';
-          row.title = 'Open decentraland/' + name + ' on GitHub';
+          row.dataset.repo = name;
+          row.tabIndex = 0;
+          row.setAttribute('role', 'button');
+          row.title = 'Select ' + name + ' in the graph';
           row.innerHTML =
             '<span class="lang-swatch" style="background:' + (langColor[lang] || '#888') + '"></span>' +
             '<span class="orphan-name">' + name + '</span>' +
-            (n && n.fork ? '<span class="orphan-fork-badge">fork</span>' : '');
+            (n && n.fork ? '<span class="orphan-fork-badge">fork</span>' : '') +
+            '<a class="orphan-ext-link" href="https://github.com/decentraland/' + encodeURIComponent(name) +
+              '" target="_blank" rel="noopener noreferrer" title="Open decentraland/' + name + ' on GitHub">&#8599;</a>';
           group.appendChild(row);
         });
 
@@ -442,7 +473,28 @@ const DATA = {"nodes":[{"id":"mana","label":"mana","language":"Solidity","degree
     }
 
     orphanCountEl.textContent = (state.search ? visible.length + ' / ' + totalOrphans : totalOrphans + ' total');
+    markSelectedOrphanRow(state.selectedNode);
   }
+
+  function markSelectedOrphanRow(nodeId) {
+    orphanListEl.querySelectorAll('.orphan-row').forEach(el => {
+      el.classList.toggle('selected', !!nodeId && el.dataset.repo === nodeId);
+    });
+  }
+
+  orphanListEl.addEventListener('click', function(e) {
+    if (e.target.closest('.orphan-ext-link')) return;
+    const row = e.target.closest('.orphan-row');
+    if (!row) return;
+    selectNode(row.dataset.repo);
+  });
+  orphanListEl.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const row = e.target.closest('.orphan-row');
+    if (!row) return;
+    e.preventDefault();
+    selectNode(row.dataset.repo);
+  });
 
   orphanCopyBtn.addEventListener('click', function() {
     const term = state.search.toLowerCase();
