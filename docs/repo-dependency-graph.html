@@ -128,6 +128,13 @@
   .orphan-empty { padding: 10px 6px; font-size: 12px; color: var(--text-dim); font-style: italic; }
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-thumb { background: #333844; border-radius: 4px; }
+  div.vis-tooltip {
+    background: var(--panel) !important; color: var(--text) !important;
+    border: 1px solid var(--panel-border) !important; border-radius: 6px !important;
+    padding: 5px 9px !important; font-size: 12.5px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+  }
 </style>
 </head>
 <body>
@@ -203,6 +210,7 @@ const DATA = {"nodes":[{"id":"mana","label":"mana","language":"Solidity","degree
   const nodesDataset = new vis.DataSet(allNodes.map(n => ({
     id: n.id,
     label: n.label,
+    title: n.id + (n.fork ? ' (fork)' : ''),
     language: n.language,
     degree: n.degree,
     fork: n.fork,
